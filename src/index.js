@@ -8,7 +8,9 @@
  *
  * @returns string[]
  */
-export const getKeysByDescriptor = (object, descriptor) => {};
+export const getKeysByDescriptor = (object, descriptor) => {
+
+};
 
 /**
  * Должен вернуть true если объект был заморожен каким-либо методом заморозки freeze, seal, preventExtensions иначе false
@@ -36,3 +38,79 @@ export const assignLockedValues = (object, propertyName) => {};
  * @returns {Object}
  */
 export const freezeAllInObject = (object) => {};
+
+//--------------------------------
+
+const object = {};
+
+Object.defineProperties(object, {
+  firstName: {
+    value: 'Test',
+    writable: false,
+    enumerable: false,
+    configurable: false,
+  },
+  lastName: {
+    value: 'Test',
+    writable: true,
+    enumerable: false,
+    configurable: false,
+  },
+  age: {
+    value: 80,
+    writable: false,
+    enumerable: true,
+    configurable: false,
+  },
+  checker: {
+    value: 80,
+    writable: false,
+    enumerable: false,
+    configurable: true,
+  },
+});
+
+// let  ss = {
+// checker: {
+//     value: 80,
+//     writable: false,
+//     enumerable: false,
+//     configurable: true,
+//   },
+// };
+
+
+// console.log(ss.checker.value);
+// let cc = object.age.writable;
+// console.log(cc);
+
+let allPropertiesDescriptors = Object.getOwnPropertyDescriptors(object);
+console.log(allPropertiesDescriptors);
+let keysAllPropertiesDescriptors = Object.keys(allPropertiesDescriptors);
+console.log(keysAllPropertiesDescriptors);
+//console.log(Object.getOwnPropertyDescriptor(object, keysAllPropertiesDescriptors[0]));
+//  console.log(allPropertiesDescriptors[keysAllPropertiesDescriptors[2]].enumerable);
+
+let bb = keysAllPropertiesDescriptors.reduce((akkum, item) => {
+alert(item);
+akkum[akkum.length++] = item;
+return akkum;
+}, []);
+console.log(bb);
+
+
+
+let d = Object.getOwnPropertyDescriptor(object, 'firstName');
+console.log('my - ');
+console.log(Object.entries(d));
+let aa = Object.entries(d)[1];
+console.log(aa[0]);
+console.log('my --- '); 
+
+
+
+// let des = Object.getOwnPropertyDescriptors(object);
+// console.log('---MY OBJECT---');
+// console.log(des);
+// console.log(Object.keys(des));
+
