@@ -9,7 +9,33 @@
  * @returns string[]
  */
 export const getKeysByDescriptor = (object, descriptor) => {
-
+  const allPropertiesDescriptors = Object.getOwnPropertyDescriptors(object);
+  const keysAllPropertiesDescriptors = Object.keys(allPropertiesDescriptors);
+  if (descriptor === 'writable') {
+    const result = keysAllPropertiesDescriptors.reduce((akkum, item) => {
+      if (allPropertiesDescriptors[item].writable === true) {
+        akkum[akkum.length++] = item;
+      }
+      return akkum;
+    }, []);
+    return result;
+  } else if (descriptor === 'enumerable') {
+    const result = keysAllPropertiesDescriptors.reduce((akkum, item) => {
+      if (allPropertiesDescriptors[item].enumerable === true) {
+        akkum[akkum.length++] = item;
+      }
+      return akkum;
+    }, []);
+    return result;
+  } else if (descriptor === 'configurable') {
+    const result = keysAllPropertiesDescriptors.reduce((akkum, item) => {
+      if (allPropertiesDescriptors[item].configurable === true) {
+        akkum[akkum.length++] = item;
+      }
+      return akkum;
+    }, []);
+    return result;
+  }
 };
 
 /**
@@ -17,7 +43,16 @@ export const getKeysByDescriptor = (object, descriptor) => {
  * @param {Object} object
  * @returns {boolean}
  */
-export const isObjectAnyFrozen = (object) => {};
+export const isObjectAnyFrozen = (object) => {
+  if (
+    Object.isFrozen(object) ||
+    !Object.isExtensible(object) ||
+    Object.isSealed(object)
+  ) {
+    return true;
+  }
+  return false;
+};
 
 /**
  * Принимает объект и строку. Мы должны вернуть НОВЫЙ объект(копию оригинального), в котором
@@ -29,7 +64,25 @@ export const isObjectAnyFrozen = (object) => {};
  *
  * @returns {Object}
  */
-export const assignLockedValues = (object, propertyName) => {};
+export const assignLockedValues = (object, propertyName) => {
+  const newObj = Object.assign({}, object);
+  if (propertyName in newObj) {
+    Object.defineProperty(newObj, propertyName, {
+      writable: false,
+      enumerable: true,
+      configurable: true,
+      value: newObj[propertyName],
+    });
+  } else {
+    Object.defineProperty(newObj, propertyName, {
+      writable: false,
+      enumerable: true,
+      configurable: true,
+      value: null,
+    });
+  }
+  return newObj;
+};
 
 /**
  * Принимает объект и возвращает его копию, только абсолютно замороженную
@@ -37,80 +90,8 @@ export const assignLockedValues = (object, propertyName) => {};
  * @param {Object} object
  * @returns {Object}
  */
-export const freezeAllInObject = (object) => {};
-
-//--------------------------------
-
-const object = {};
-
-Object.defineProperties(object, {
-  firstName: {
-    value: 'Test',
-    writable: false,
-    enumerable: false,
-    configurable: false,
-  },
-  lastName: {
-    value: 'Test',
-    writable: true,
-    enumerable: false,
-    configurable: false,
-  },
-  age: {
-    value: 80,
-    writable: false,
-    enumerable: true,
-    configurable: false,
-  },
-  checker: {
-    value: 80,
-    writable: false,
-    enumerable: false,
-    configurable: true,
-  },
-});
-
-// let  ss = {
-// checker: {
-//     value: 80,
-//     writable: false,
-//     enumerable: false,
-//     configurable: true,
-//   },
-// };
-
-
-// console.log(ss.checker.value);
-// let cc = object.age.writable;
-// console.log(cc);
-
-let allPropertiesDescriptors = Object.getOwnPropertyDescriptors(object);
-console.log(allPropertiesDescriptors);
-let keysAllPropertiesDescriptors = Object.keys(allPropertiesDescriptors);
-console.log(keysAllPropertiesDescriptors);
-//console.log(Object.getOwnPropertyDescriptor(object, keysAllPropertiesDescriptors[0]));
-//  console.log(allPropertiesDescriptors[keysAllPropertiesDescriptors[2]].enumerable);
-
-let bb = keysAllPropertiesDescriptors.reduce((akkum, item) => {
-alert(item);
-akkum[akkum.length++] = item;
-return akkum;
-}, []);
-console.log(bb);
-
-
-
-let d = Object.getOwnPropertyDescriptor(object, 'firstName');
-console.log('my - ');
-console.log(Object.entries(d));
-let aa = Object.entries(d)[1];
-console.log(aa[0]);
-console.log('my --- '); 
-
-
-
-// let des = Object.getOwnPropertyDescriptors(object);
-// console.log('---MY OBJECT---');
-// console.log(des);
-// console.log(Object.keys(des));
-
+export const freezeAllInObject = (object) => {
+  let newObj = Object.assign({}, object);
+  Object.freeze(newObj);
+  return newObj;
+};
