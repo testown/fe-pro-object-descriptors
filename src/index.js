@@ -11,31 +11,11 @@
 export const getKeysByDescriptor = (object, descriptor) => {
   const allPropertiesDescriptors = Object.getOwnPropertyDescriptors(object);
   const keysAllPropertiesDescriptors = Object.keys(allPropertiesDescriptors);
-  if (descriptor === 'writable') {
-    const result = keysAllPropertiesDescriptors.reduce((akkum, item) => {
-      if (allPropertiesDescriptors[item].writable === true) {
-        akkum[akkum.length++] = item;
-      }
-      return akkum;
-    }, []);
-    return result;
-  } else if (descriptor === 'enumerable') {
-    const result = keysAllPropertiesDescriptors.reduce((akkum, item) => {
-      if (allPropertiesDescriptors[item].enumerable === true) {
-        akkum[akkum.length++] = item;
-      }
-      return akkum;
-    }, []);
-    return result;
-  } else if (descriptor === 'configurable') {
-    const result = keysAllPropertiesDescriptors.reduce((akkum, item) => {
-      if (allPropertiesDescriptors[item].configurable === true) {
-        akkum[akkum.length++] = item;
-      }
-      return akkum;
-    }, []);
-    return result;
-  }
+  const result = keysAllPropertiesDescriptors.reduce((akkum, item) => {
+    if (allPropertiesDescriptors[item][descriptor] === true) akkum.push(item);
+    return akkum;
+  }, []);
+  return result;
 };
 
 /**
@@ -44,14 +24,7 @@ export const getKeysByDescriptor = (object, descriptor) => {
  * @returns {boolean}
  */
 export const isObjectAnyFrozen = (object) => {
-  if (
-    Object.isFrozen(object) ||
-    !Object.isExtensible(object) ||
-    Object.isSealed(object)
-  ) {
-    return true;
-  }
-  return false;
+  return Object.isFrozen(object);
 };
 
 /**
